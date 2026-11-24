@@ -87,7 +87,12 @@ function renderTopicPractice(topic){let q=practiceBank.find(x=>x.topic===topic);
 function checkTopicPractice(i){let q=window.activeTopicQuestion;document.querySelectorAll('#topicpractice .option').forEach((b,j)=>b.classList.add(j===q.a?'correct':j===i?'wrong':''));document.getElementById('topicexplain').innerHTML='<div class="answer"><b>'+(i===q.a?'Correct':'Correct answer: '+q.o[q.a])+'</b><p>'+q.e+'</p></div>';if(i===q.a){d.xp+=5;save();profileRender();notice('+5 XP')}}
 function saveBankBookmark(id){d.bankBookmarks??=[];if(!d.bankBookmarks.includes(id))d.bankBookmarks.push(id);save();notice('Bookmarked')}
 function saveBankNote(id){d.bankNotes??={};d.bankNotes[id]=document.getElementById('banknote').value;save();notice('Notes saved on this device')}
-function downloadBankNotes(si,ti){let name=Object.keys(bankTopics)[si],topic=bankTopics[name][ti],info=topicInfo[topic]||['','',''];let blob=new Blob(['BankPrep revision notes\\n'+name+' / '+topic+'\\n\\n'+info.join('\\n\\n')],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=topic.replace(/[^a-z0-9]/gi,'_')+'.txt';a.click();URL.revokeObjectURL(url)}
+function downloadBankNotes(si,ti){let name=Object.keys(bankTopics)[si],topic=bankTopics[name][ti],info=topicInfo[topic]||['','',''];let blob=new Blob(['BankPrep revision notes\
+'+name+' / '+topic+'\
+\
+'+info.join('\
+\
+')],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=topic.replace(/[^a-z0-9]/gi,'_')+'.txt';a.click();URL.revokeObjectURL(url)}
 let activeTest=null,testTicker=null;
 function startTest(kind){clearInterval(testTicker);let set=kind==='Mixed'?practiceBank:practiceBank.filter(x=>kind==='Quant'?['Percentage','Ratio & Proportion','Profit & Loss'].includes(x.topic):kind==='Reasoning'?['Syllogism','Series'].includes(x.topic):kind==='English'?['Subject-Verb Agreement','Vocabulary'].includes(x.topic):kind==='Awareness'?['Banking Basics'].includes(x.topic):kind==='Computer'?['Computer Fundamentals','Cyber Safety'].includes(x.topic):true);if(!set.length)set=practiceBank;activeTest={kind,qs:set.slice(),i:0,answers:{},review:{},time:set.length*45};drawTest();testTicker=setInterval(()=>{if(!activeTest)return;activeTest.time--;if(activeTest.time<=0)finishTest();else{let c=document.getElementById('timer');if(c)c.textContent=clock(activeTest.time)}},1000)}
 function clock(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
@@ -123,4 +128,5 @@ document.addEventListener("touchend",e=>{if(window.__pullY!==undefined&&e.change
 window.addEventListener("load",()=>setTimeout(()=>document.getElementById("splash")?.classList.add("hide"),650));
 if("serviceWorker" in navigator)navigator.serviceWorker.addEventListener("controllerchange",()=>notice("App updated"));
 
-initNav();go('home');mathNew();memoryNew();\n</script></body></html>
+initNav();go('home');mathNew();memoryNew();
+</script></body></html>
