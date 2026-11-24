@@ -32,7 +32,7 @@ jobs:
           calls=set()
           for handler in re.findall(r"\bon(?:click|change|submit)\s*=\s*[\"']([^\"']*)[\"']",html,re.I):
               calls.update(re.findall(r"([\w$]+)\s*\(",handler))
-          ignored={"if","confirm","alert","scrollTo","setTimeout","setInterval","notice","save","render"}
+          ignored={"if","confirm","alert","scrollTo","setTimeout","setInterval","notice","save","render","getElementById"}
           missing=sorted(calls-defined-ignored)
           assert not missing, "Inline handlers reference missing functions: "+str(missing)
           class Links(HTMLParser):
