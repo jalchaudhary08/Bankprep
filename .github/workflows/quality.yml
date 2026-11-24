@@ -1,0 +1,51 @@
+name: BankPrep quality checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate manifest and markup hooks
+        run: |
+          python - <<'PY'
+          import json, re, xml.etree.ElementTree as ET
+          from html.parser import HTMLParser
+          manifest=json.load(open("manifest.json",encoding="utf8"))
+          assert manifest["display"]=="standalone"
+          assert manifest["start_url"] and manifest["scope"]
+          assert any(i["sizes"]=="192x192" for i in manifest["icons"])
+          assert any(i["sizes"]=="512x512" for i in manifest["icons"])
+          for icon in ["icon.svg","icons/icon-192.svg","icons/icon-512.svg"]:
+              ET.parse(icon)
+          html=open("index.html",encoding="utf8").read()
+          scripts=re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>",html,re.S|re.I)
+          assert scripts, "No inline app script found"
+          open("/tmp/app.js","w",encoding="utf8").write("\n".join(scripts))
+          defined=set(re.findall(r"function\s+([\w$]+)\s*\(",html))
+          calls=set()
+          for handler in re.findall(r"\bon(?:click|change|submit)\s*=\s*[\"']([^\"']*)[\"']",html,re.I):
+              calls.update(re.findall(r"([\w$]+)\s*\(",handler))
+          ignored={"if","confirm","alert","scrollTo","setTimeout","setInterval","notice","save","render"}
+          missing=sorted(calls-defined-ignored)
+          assert not missing, "Inline handlers reference missing functions: "+str(missing)
+          class Links(HTMLParser):
+              def __init__(self): super().__init__(); self.hrefs=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=="a":
+                      href=dict(attrs).get("href","")
+                      self.hrefs.append(href)
+          p=Links();p.feed(html)
+          assert all(not h.startswith(("http://","https://")) for h in p.hrefs), "External anchor detected"
+          print("Static smoke checks passed. Inline handlers:",len(calls))
+          PY
+      - name: JavaScript syntax checks
+        run: |
+          node --check /tmp/app.js
+          node --check sw.js
