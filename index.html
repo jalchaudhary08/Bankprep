@@ -44,8 +44,8 @@ function saveExam(){d.exam=document.getElementById('exam').value;save();examGuid
 function saveProfile(){d.name=document.getElementById('name').value;d.hours=document.getElementById('hours').value;save();document.getElementById('greet').textContent=d.name?'WELCOME, '+d.name.toUpperCase():'YOUR STUDY SPACE';notice('Saved preferences')}
 function profileRender(){document.getElementById('pxp').textContent=d.xp;document.getElementById('ptasks').textContent=todo.filter(x=>d.tasks[x[0]]).length;document.getElementById('pwords').textContent=d.saved.length}
 function reset(){if(confirm('Clear your saved progress on this device?')){localStorage.removeItem('bpdata');location.reload()}}
-function render(){tasksRender();subjectRender();subjectLibraryRender();planner();quizRender();wordRender();profileRender();examGuideRender();document.getElementById('exam').value=d.exam;document.getElementById('name').value=d.name||'';document.getElementById('hours').value=d.hours||'3 hours';document.getElementById('greet').textContent=d.name?'WELCOME, '+d.name.toUpperCase():'YOUR STUDY SPACE'}
-initNav();go('home');mathNew();memoryNew();
+function render(){tasksRender();subjectRender();subjectLibraryRender();planner();quizRender();wordRender();profileRender();document.getElementById('exam').value=d.exam;examGuideRender();document.getElementById('name').value=d.name||'';document.getElementById('hours').value=d.hours||'3 hours';document.getElementById('greet').textContent=d.name?'WELCOME, '+d.name.toUpperCase():'YOUR STUDY SPACE'}
+
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").then(reg=>{reg.update().catch(()=>{});reg.addEventListener("updatefound",()=>{const worker=reg.installing;worker?.addEventListener("statechange",()=>{if(worker.state==="installed"&&navigator.serviceWorker.controller)notice("Update ready. Reload to use latest.")})}).catch(()=>{})}).catch(()=>{}));}
 
 const bankTopics={
@@ -106,7 +106,7 @@ const examGuideData={
 'SSC CHSL':{stages:'Tier I → Tier II',pre:'Tier I pattern varies by current notification; official SSC notice required.',main:'Tier II details depend on current notice; not yet verified in this app.',note:'Non-banking exam included in target list.',url:'https://ssc.gov.in/'}
 };
 function examGuideRender(){let name=document.getElementById('exam').value,info=examGuideData[name]||examGuideData['IBPS PO'];document.getElementById('examguide').innerHTML='<span class="badge">'+name+'</span><h3 class="section">Selection stages</h3><p>'+info.stages+'</p><h3>Prelims</h3><p>'+info.pre+'</p><h3>Mains / next stage</h3><p>'+info.main+'</p><div class="answer">'+info.note+'</div><button class="btn section" onclick="openOfficial('+JSON.stringify(info.url)+')">Official notification / website</button>'}
-function openOfficial(url){if(!confirm('Open this official source inside the BankPrep source viewer? The page is from an external organization.'))return;document.getElementById('sheetcontent').innerHTML='<h2>Official source</h2><p class="small">External official page displayed in this sheet. Some sites may block embedded viewing; use the back button to return.</p><iframe title="Official source" src="'+url+'" style="width:100%;height:60vh;border:1px solid var(--line);border-radius:12px"></iframe><p><button class="btn outline" onclick="sheetClose({target:{id:\'none\'}})">Close source</button></p>';document.getElementById('sheet').classList.add('open')}
+function openOfficial(url){if(!confirm('Open this official source inside the BankPrep source viewer? The page is from an external organization.'))return;document.getElementById('sheetcontent').innerHTML='<h2>Official source</h2><p class="small">External official page displayed in this sheet. Some sites may block embedded viewing; use the back button to return.</p><iframe title="Official source" src="'+url+'" style="width:100%;height:60vh;border:1px solid var(--line);border-radius:12px"></iframe><p><button class="btn outline" onclick="document.getElementById(\'sheet\').classList.remove(\'open\')">Close source</button></p>';document.getElementById('sheet').classList.add('open')}
 // PWA/install + accessibility helpers
 let deferredInstall=null;
 window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredInstall=event;const b=document.getElementById("installbtn");if(b)b.textContent="Install app";const hint=document.getElementById("installhint");if(hint)hint.textContent="Install is available on this device."});
@@ -122,4 +122,4 @@ document.addEventListener("touchend",e=>{if(window.__pullY!==undefined&&e.change
 window.addEventListener("load",()=>setTimeout(()=>document.getElementById("splash")?.classList.add("hide"),650));
 if("serviceWorker" in navigator)navigator.serviceWorker.addEventListener("controllerchange",()=>notice("App updated"));
 
-</script></body></html>
+initNav();go('home');mathNew();memoryNew();\n</script></body></html>
