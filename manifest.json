@@ -1,0 +1,15 @@
+{
+  "name": "BankPrep — Prepare with Purpose",
+  "short_name": "BankPrep",
+  "description": "Your personal bank exam study space.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#f1f4ef",
+  "theme_color": "#164b3b",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
